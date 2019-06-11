@@ -136,7 +136,9 @@ function explore(thing1, thing2, what) {
     scene.remove(thing2)
   }
 }
-
+//x是玩家的座標 
+//xx是水球的座標
+//xxx是其他可能被炸掉的東西的座標
 function check_explore(ammoBody) {
   const xx = ammoBody.position.x
   const yy = ammoBody.position.y
@@ -206,6 +208,7 @@ function initCannon() {
   playerBody = new CANNON.Body({ mass: 5 })
   playerBody.addShape(sphereShape)
   playerBody.position.set(-10, 0, 50)
+  playerBody.bomb = 0;
   playerBody.linearDamping = 0.9
   world.addBody(playerBody)
 
@@ -480,6 +483,7 @@ window.addEventListener('click', function(e) {
 
     // 左鍵（1）射擊與右鍵（3）疊磚
     if (e.which === 1) {
+      if(playerBody.bomb >= 3) return; 
       // 射擊聲
       if (synth) {
         synth.triggerAttackRelease('0.01')
@@ -509,6 +513,8 @@ window.addEventListener('click', function(e) {
       ammos.push(ammoBody)
       ammoMeshes.push(ammoMesh)
       ammos_explore.push(false)
+      playerBody.bomb = playerBody.bomb + 1;
+      console.log(playerBody.bomb)
 
       let now = ammos.length - 1;
 
@@ -523,6 +529,7 @@ window.addEventListener('click', function(e) {
           await explore(ammoBody, ammoMesh, 'ammo');
           ammos[now] = true
         }
+        playerBody.bomb = playerBody.bomb - 1;
         clearInterval(id)
       }, 5000);
 
